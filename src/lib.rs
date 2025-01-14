@@ -63,12 +63,12 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     }
 
     for rect in second_h {
-        if rect.x1 < mid {
-            if rect.x1 <= first {
+        if rect.x1 >= mid {
+            s22.push(rect);
+        } else {
+            if rect.x1 < first {
                 s21.push(rect);
             }
-        } else {
-            s22.push(rect);
         }
     }
 
