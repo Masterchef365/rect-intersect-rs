@@ -25,6 +25,10 @@ fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
 }
 
 fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
+    if v.len() < 2 {
+        return;
+    }
+
     let (first_half, second_half) = v.split_at(v.len() / 2);
 
     let mut first_h: Vec<Rect> = first_half.iter().map(|(_, r)| *r).collect();
@@ -89,5 +93,64 @@ fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
             }
             j += 1;
         }
+    }
+}
+
+
+impl Rect {
+    fn intersects(&self, other: &Self) -> bool {
+        self.x1 <= other.x2
+            && other.x1 <= self.x2
+            && self.y1 <= other.y2
+            && other.y1 <= self.y2
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn trivial() {
+        let r1 = Rect {
+            id: 0,
+            x1: 5,
+            x2: 10,
+            y1: 2,
+            y2: 8
+        };
+
+        let r2 = Rect {
+            id: 1,
+            x1: 5,
+            x2: 10,
+            y1: 2,
+            y2: 8
+        };
+
+        assert!(r1.intersects(&r2));
+        assert_eq!(intersect(&[r1, r2]), vec![(1, 0)]);
+    }
+
+    #[test]
+    fn trivial2() {
+        let r1 = Rect {
+            id: 0,
+            x1: 5,
+            x2: 10,
+            y1: 2,
+            y2: 8
+        };
+
+        let r2 = Rect {
+            id: 1,
+            x1: 50,
+            x2: 10,
+            y1: 2,
+            y2: 8
+        };
+
+        assert!(!r1.intersects(&r2));
+        assert_eq!(intersect(&[r1, r2]), vec![]);
     }
 }
