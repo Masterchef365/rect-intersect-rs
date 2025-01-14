@@ -110,9 +110,22 @@ impl Rect {
 
 #[cfg(test)]
 mod tests {
+    use rand::{rngs::SmallRng, Rng, SeedableRng};
     use std::collections::HashSet;
 
     use super::*;
+
+    pub fn brute_force_intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
+        let mut output = vec![];
+        for i in 0..rects.len() {
+            for j in i + 1..rects.len() {
+                if rects[i].intersects(&rects[j]) {
+                    output.push((rects[i].id, rects[j].id));
+                }
+            }
+        }
+        output
+    }
 
     #[track_caller]
     fn to_comparable(indices: Vec<(usize, usize)>) -> HashSet<(usize, usize)> {
@@ -197,5 +210,42 @@ mod tests {
             to_comparable(intersect(&[r1, r2])),
             to_comparable(vec![(1, 0)])
         );
+    }
+
+    #[test]
+    fn random1() {
+        let rects = random_rects(10);
+        assert_eq!(
+            to_comparable(brute_force_intersect(&rects)),
+            to_comparable(intersect(&rects))
+        );
+    }
+
+    #[test]
+    fn random2() {
+        let rects = random_rects(100);
+        assert_eq!(
+            to_comparable(brute_force_intersect(&rects)),
+            to_comparable(intersect(&rects))
+        );
+    }
+
+    fn random_rects(n: usize) -> Vec<Rect> {
+        let mut rng = SmallRng::seed_from_u64(0);
+
+        let range = 1000;
+        let sz = 10;
+
+        (0..n)
+            .map(|id| {
+                let x1 = rng.gen_range(-range..=range);
+                let x2 = x1 + rng.gen_range(1..=sz);
+
+                let y1 = rng.gen_range(-range..=range);
+                let y2 = y1 + rng.gen_range(1..=sz);
+
+                Rect { x1, x2, y1, y2, id }
+            })
+            .collect()
     }
 }
