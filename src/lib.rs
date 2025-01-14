@@ -62,7 +62,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
 
     for &(_, rect) in second_half {
         if let Some((first_begin, _)) = first_half.first() {
-            if rect.x1 > *first_begin {
+            if rect.x1 < *first_begin {
                 s21.push(rect);
             } else {
                 s22.push(rect);
