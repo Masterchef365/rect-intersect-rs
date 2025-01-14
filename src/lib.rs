@@ -84,16 +84,16 @@ fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
     let (mut i, mut j) = (0, 0);
 
     while i < a.len() && j < b.len() {
-        if a[i].x1 < b[j].x1 {
+        if a[i].y1 < b[j].y1 {
             let mut k = j;
-            while k < b.len() && b[k].x1 < a[i].x2 {
+            while k < b.len() && b[k].y1 < a[i].y2 {
                 cb(a[i].id, b[k].id);
                 k += 1;
             }
             i += 1;
         } else {
             let mut k = i;
-            while k < a.len() && a[k].x1 < b[j].x2 {
+            while k < a.len() && a[k].y1 < b[j].y2 {
                 cb(b[j].id, a[k].id);
                 k += 1
             }
@@ -214,7 +214,7 @@ mod tests {
 
     #[test]
     fn random1() {
-        let rects = random_rects(10);
+        let rects = random_rects(20);
         assert_eq!(
             to_comparable(brute_force_intersect(&rects)),
             to_comparable(intersect(&rects))
@@ -233,7 +233,7 @@ mod tests {
     fn random_rects(n: usize) -> Vec<Rect> {
         let mut rng = SmallRng::seed_from_u64(0);
 
-        let range = 1000;
+        let range = 100;
         let sz = 10;
 
         (0..n)
