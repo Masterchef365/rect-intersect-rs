@@ -138,6 +138,7 @@ mod tests {
             output.insert((l, h));
         }
         let mut output: Vec<(usize, usize)> = output.into_iter().collect();
+        output.sort_by_key(|(_, j)| *j);
         output.sort_by_key(|(i, _)| *i);
         output
     }
