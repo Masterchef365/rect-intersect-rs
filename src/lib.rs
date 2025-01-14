@@ -14,6 +14,12 @@ pub fn intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
 }
 
 fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
+    #[cfg(debug_assertions)]
+    for r in rects {
+        debug_assert!(r.x1 <= r.x2);
+        debug_assert!(r.y1 <= r.y2);
+    }
+
     let mut v: Vec<(i32, Rect)> = rects
         .iter()
         .map(|r| [(r.x1, *r), (r.x2, *r)])
@@ -87,7 +93,7 @@ fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
             i += 1;
         } else {
             let mut k = i;
-            while k < a.len() && a[k].x1 < a[j].x2 {
+            while k < a.len() && a[k].x1 < b[j].x2 {
                 cb(b[j].id, a[k].id);
                 k += 1
             }
@@ -111,7 +117,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn trivial() {
+    fn trivial1() {
         let r1 = Rect {
             id: 0,
             x1: 5,
@@ -145,12 +151,34 @@ mod tests {
         let r2 = Rect {
             id: 1,
             x1: 50,
-            x2: 10,
+            x2: 60,
             y1: 2,
             y2: 8
         };
 
         assert!(!r1.intersects(&r2));
         assert_eq!(intersect(&[r1, r2]), vec![]);
+    }
+
+    #[test]
+    fn trivial3() {
+        let r1 = Rect {
+            id: 0,
+            x1: 5,
+            x2: 10,
+            y1: 2,
+            y2: 8
+        };
+
+        let r2 = Rect {
+            id: 1,
+            x1: 9,
+            x2: 25,
+            y1: 2,
+            y2: 8
+        };
+
+        assert!(r1.intersects(&r2));
+        assert_eq!(intersect(&[r1, r2]), vec![(1, 0)]);
     }
 }
