@@ -48,24 +48,24 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     let mut s21 = vec![];
     let mut s22 = vec![];
 
-    for &(_, rect) in first_half {
-        if let Some((second_end, _)) = second_half.last() {
-            if rect.x2 > *second_end {
-                s12.push(rect);
-            } else {
-                s11.push(rect);
-            }
-        } else {
+    let first = first_half.first().unwrap().0;
+    let mid = second_half.first().unwrap().0;
+    let end = second_half.last().unwrap().0;
+
+    for rect in first_h {
+        if rect.x2 < mid {
             s11.push(rect);
+        } else {
+            if rect.x2 > end {
+                s12.push(rect);
+            }
         }
     }
 
-    for &(_, rect) in second_half {
-        if let Some((first_begin, _)) = first_half.first() {
-            if rect.x1 < *first_begin {
+    for rect in second_h {
+        if rect.x1 < mid {
+            if rect.x1 <= first {
                 s21.push(rect);
-            } else {
-                s22.push(rect);
             }
         } else {
             s22.push(rect);
@@ -216,8 +216,8 @@ mod tests {
     fn random1() {
         let rects = random_rects(20);
         assert_eq!(
+            to_comparable(intersect(&rects)),
             to_comparable(brute_force_intersect(&rects)),
-            to_comparable(intersect(&rects))
         );
     }
 
@@ -225,8 +225,8 @@ mod tests {
     fn random2() {
         let rects = random_rects(100);
         assert_eq!(
+            to_comparable(intersect(&rects)),
             to_comparable(brute_force_intersect(&rects)),
-            to_comparable(intersect(&rects))
         );
     }
 
