@@ -128,7 +128,7 @@ mod tests {
     }
 
     #[track_caller]
-    fn to_comparable(indices: Vec<(usize, usize)>) -> HashSet<(usize, usize)> {
+    fn to_comparable(indices: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
         let mut output = HashSet::new();
         for (a, b) in indices {
             assert_ne!(a, b);
@@ -137,6 +137,8 @@ mod tests {
             let [l, h] = v;
             output.insert((l, h));
         }
+        let mut output: Vec<(usize, usize)> = output.into_iter().collect();
+        output.sort_by_key(|(i, _)| *i);
         output
     }
 
