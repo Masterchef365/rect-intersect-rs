@@ -102,19 +102,30 @@ fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
     }
 }
 
-
 impl Rect {
     fn intersects(&self, other: &Self) -> bool {
-        self.x1 <= other.x2
-            && other.x1 <= self.x2
-            && self.y1 <= other.y2
-            && other.y1 <= self.y2
+        self.x1 <= other.x2 && other.x1 <= self.x2 && self.y1 <= other.y2 && other.y1 <= self.y2
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use super::*;
+
+    #[track_caller]
+    fn to_comparable(indices: Vec<(usize, usize)>) -> HashSet<(usize, usize)> {
+        let mut output = HashSet::new();
+        for (a, b) in indices {
+            assert_ne!(a, b);
+            let mut v = [a, b];
+            v.sort();
+            let [l, h] = v;
+            output.insert((l, h));
+        }
+        output
+    }
 
     #[test]
     fn trivial1() {
@@ -123,7 +134,7 @@ mod tests {
             x1: 5,
             x2: 10,
             y1: 2,
-            y2: 8
+            y2: 8,
         };
 
         let r2 = Rect {
@@ -131,11 +142,14 @@ mod tests {
             x1: 5,
             x2: 10,
             y1: 2,
-            y2: 8
+            y2: 8,
         };
 
         assert!(r1.intersects(&r2));
-        assert_eq!(intersect(&[r1, r2]), vec![(1, 0)]);
+        assert_eq!(
+            to_comparable(intersect(&[r1, r2])),
+            to_comparable(vec![(1, 0)])
+        );
     }
 
     #[test]
@@ -145,7 +159,7 @@ mod tests {
             x1: 5,
             x2: 10,
             y1: 2,
-            y2: 8
+            y2: 8,
         };
 
         let r2 = Rect {
@@ -153,7 +167,7 @@ mod tests {
             x1: 50,
             x2: 60,
             y1: 2,
-            y2: 8
+            y2: 8,
         };
 
         assert!(!r1.intersects(&r2));
@@ -167,7 +181,7 @@ mod tests {
             x1: 5,
             x2: 10,
             y1: 2,
-            y2: 8
+            y2: 8,
         };
 
         let r2 = Rect {
@@ -175,10 +189,13 @@ mod tests {
             x1: 9,
             x2: 25,
             y1: 2,
-            y2: 8
+            y2: 8,
         };
 
         assert!(r1.intersects(&r2));
-        assert_eq!(intersect(&[r1, r2]), vec![(1, 0)]);
+        assert_eq!(
+            to_comparable(intersect(&[r1, r2])),
+            to_comparable(vec![(1, 0)])
+        );
     }
 }
