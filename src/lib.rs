@@ -214,7 +214,7 @@ mod tests {
 
     #[test]
     fn random1() {
-        let rects = random_rects(20);
+        let rects = random_rects(20, 0);
         assert_eq!(
             to_comparable(intersect(&rects)),
             to_comparable(brute_force_intersect(&rects)),
@@ -223,15 +223,15 @@ mod tests {
 
     #[test]
     fn random2() {
-        let rects = random_rects(100);
+        let rects = random_rects(100, 422);
         assert_eq!(
             to_comparable(intersect(&rects)),
             to_comparable(brute_force_intersect(&rects)),
         );
     }
 
-    fn random_rects(n: usize) -> Vec<Rect> {
-        let mut rng = SmallRng::seed_from_u64(0);
+    fn random_rects(n: usize, seed: u64) -> Vec<Rect> {
+        let mut rng = SmallRng::seed_from_u64(seed);
 
         let range = 100;
         let sz = 10;
