@@ -62,8 +62,6 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
         } else {
             if rect.x2 > end {
                 s12.push(rect);
-            } else {
-                s11.push(rect);
             }
         }
     }
@@ -74,8 +72,6 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
         } else {
             if rect.x1 < first {
                 s21.push(rect);
-            } else {
-                s22.push(rect);
             }
         }
     }
