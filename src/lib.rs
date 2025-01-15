@@ -223,7 +223,7 @@ mod tests {
         };
 
         assert!(!r1.intersects(&r2));
-        assert_eq!(intersect(&[r1, r2]), vec![]);
+        assert_eq!(to_comparable(intersect(&[r1, r2])), vec![]);
     }
 
     #[test]
