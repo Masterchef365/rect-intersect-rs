@@ -58,7 +58,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     dbg!((first, mid, end, first_y_sort.len(), second_y_sort.len()));
 
     for rect in first_y_sort {
-        if rect.x2 < mid {
+        if rect.x2 <= mid {
             s11.push(rect);
         } else {
             if rect.x2 >= end {
@@ -71,7 +71,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
         if rect.x1 >= mid {
             s22.push(rect);
         } else {
-            if rect.x1 < first {
+            if rect.x1 <= first {
                 s21.push(rect);
             }
         }
@@ -84,8 +84,8 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     eprintln!("S12 S21");
     stab(&s12, &s21, cb);
 
-    //eprintln!("S21 S22");
-    stab(&s21, &s12, cb);
+    //eprintln!("S11 S22");
+    //stab(&s11, &s22, cb);
 
     detect(&first_half, cb);
     detect(&second_half, cb);
@@ -146,6 +146,9 @@ pub fn to_comparable(indices: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
     use std::collections::HashSet;
     let mut output = HashSet::new();
     for (a, b) in indices {
+        if a == b {
+            continue;
+        }
         //assert_ne!(a, b);
         let mut v = [a, b];
         v.sort();
