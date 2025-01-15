@@ -65,7 +65,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
             first_mid_touch.push(rect);
         }
 
-        if rect.x2 < mid {
+        if rect.x2 <= mid {
             s11.push(rect);
         } else {
             if rect.x2 >= end {
