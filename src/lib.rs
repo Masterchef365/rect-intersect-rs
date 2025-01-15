@@ -38,6 +38,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     }
 
     let (first_half, second_half) = v.split_at(v.len() / 2);
+    dbg!(first_half, second_half);
 
     let mut first_h: Vec<Rect> = first_half.iter().map(|(_, r)| *r).collect();
     first_h.sort_by_key(|r| r.y1);
@@ -50,30 +51,35 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     let mut s21 = vec![];
     let mut s22 = vec![];
 
-    let first = first_half.first().unwrap().0;
-    let mid = second_half.first().unwrap().0;
-    let end = second_half.last().unwrap().0;
+    let left_begin = first_half.first().unwrap().0;
+    let left_end = first_half.last().unwrap().0;
+    let right_begin = second_half.first().unwrap().0;
+    let right_end = second_half.last().unwrap().0;
 
-    dbg!((first, mid, end, first_h.len(), second_h.len()));
+    dbg!((left_begin, right_begin, right_end, first_h.len(), second_h.len()));
 
     for rect in first_h {
-        if rect.x2 < mid {
+        if rect.x2 <= left_end {
             s11.push(rect);
         } else {
-            if rect.x2 > end {
+            if rect.x2 > right_end {
                 s12.push(rect);
             }
         }
     }
 
     for rect in second_h {
-        if rect.x1 >= mid {
+        if rect.x1 >= right_begin {
             s22.push(rect);
         } else {
-            if rect.x1 < first {
+            if rect.x1 < left_begin {
                 s21.push(rect);
             }
         }
+    }
+
+    if left_end == right_begin {
+        stab(&[first_half.last().unwrap().1], &[second_half.first().unwrap().1], cb);
     }
 
     eprintln!("S12 S22");
