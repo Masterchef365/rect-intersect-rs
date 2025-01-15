@@ -44,6 +44,8 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     let mut s12 = vec![];
     let mut s21 = vec![];
     let mut s22 = vec![];
+    let mut first_mid_touch = vec![];
+    let mut second_mid_touch = vec![];
 
     let first = first_half.first().unwrap().0;
     let mid = second_half.first().unwrap().0;
@@ -57,8 +59,13 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
 
     dbg!((first, mid, end, first_y_sort.len(), second_y_sort.len()));
 
+
     for rect in first_y_sort {
-        if rect.x2 <= mid {
+        if rect.x2 == mid {
+            first_mid_touch.push(rect);
+        }
+
+        if rect.x2 < mid {
             s11.push(rect);
         } else {
             if rect.x2 >= end {
@@ -68,7 +75,11 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     }
 
     for rect in second_y_sort {
-        if rect.x1 >= mid {
+        if rect.x1 == mid {
+            second_mid_touch.push(rect);
+        }
+
+        if rect.x1 > mid {
             s22.push(rect);
         } else {
             if rect.x1 <= first {
@@ -83,6 +94,8 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     stab(&s21, &s11, cb);
     eprintln!("S12 S21");
     stab(&s12, &s21, cb);
+    eprintln!("S mids");
+    stab(&first_mid_touch, &second_mid_touch, cb);
 
     //eprintln!("S11 S22");
     //stab(&s11, &s22, cb);
