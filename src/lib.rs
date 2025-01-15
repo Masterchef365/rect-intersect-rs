@@ -22,17 +22,18 @@ fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
         debug_assert!(r.y1 <= r.y2);
     }
 
-    let mut v: Vec<(i32, Rect)> = rects
+    let mut v: Vec<(i32, usize)> = rects
         .iter()
-        .map(|r| [(r.x1, *r), (r.x2, *r)])
+        .enumerate()
+        .map(|(idx, r)| [(r.x1, idx), (r.x2, idx)])
         .flatten()
         .collect();
     v.sort_by_key(|(x, _)| *x);
 
-    detect(&v, cb)
+    detect(rects, &v, cb)
 }
 
-fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
+fn detect(rects: &[Rect], v: &[(i32, usize)], cb: &mut impl FnMut(usize, usize)) {
     if v.len() < 2 {
         return;
     }
@@ -46,68 +47,68 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     let mut first_mid_touch = vec![];
     let mut second_mid_touch = vec![];
 
-    let first = first_half.first().unwrap().0;
-    let mid = second_half.first().unwrap().0;
-    let end = second_half.last().unwrap().0;
+    let first = first_half.first().unwrap();
+    let mid = second_half.first().unwrap();
+    let end = second_half.last().unwrap();
 
-    let mut first_y_sort: Vec<Rect> = first_half.iter().map(|(_, r)| *r).collect();
-    first_y_sort.sort_by_key(|r| r.y1);
+    let mut first_y_sort: Vec<usize> = (first.1..mid.1).collect();
+    first_y_sort.sort_by_key(|i| rects[*i].y1);
 
-    let mut second_y_sort: Vec<Rect> = second_half.iter().map(|(_, r)| *r).collect();
-    second_y_sort.sort_by_key(|r| r.y1);
+    let mut second_y_sort: Vec<usize> = (mid.1..=end.1).collect();
+    second_y_sort.sort_by_key(|i| rects[*i].y1);
 
-    for rect in first_y_sort {
-        if rect.x2 == mid {
-            first_mid_touch.push(rect);
+    for i in first_y_sort {
+        if rects[i].x2 == mid.0 {
+            first_mid_touch.push(i);
         }
 
-        if rect.x2 <= mid {
-            s11.push(rect);
+        if rects[i].x2 <= mid.0 {
+            s11.push(i);
         } else {
-            if rect.x2 >= end {
-                s12.push(rect);
+            if rects[i].x2 >= end.0 {
+                s12.push(i);
             }
         }
     }
 
-    for rect in second_y_sort {
-        if rect.x1 == mid {
-            second_mid_touch.push(rect);
+    for i in second_y_sort {
+        if rects[i].x1 == mid.0 {
+            second_mid_touch.push(i);
         }
 
-        if rect.x1 >= mid {
-            s22.push(rect);
+        if rects[i].x1 >= mid.0 {
+            s22.push(i);
         } else {
-            if rect.x1 <= first {
-                s21.push(rect);
+            if rects[i].x1 <= first.0 {
+                s21.push(i);
             }
         }
     }
 
-    stab(&s12, &s22, cb);
-    stab(&s21, &s11, cb);
-    stab(&s12, &s21, cb);
-    stab(&first_mid_touch, &second_mid_touch, cb);
+    stab(rects, &s12, &s22, cb);
+    stab(rects, &s21, &s11, cb);
+    stab(rects, &s12, &s21, cb);
+    stab(rects, &first_mid_touch, &second_mid_touch, cb);
 
-    detect(&first_half, cb);
-    detect(&second_half, cb);
+    detect(rects, &first_half, cb);
+    detect(rects, &second_half, cb);
 }
 
-fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
+fn stab(rects: &[Rect], a: &[usize], b: &[usize], cb: &mut impl FnMut(usize, usize)) {
     let (mut i, mut j) = (0, 0);
 
     while i < a.len() && j < b.len() {
-        if a[i].y1 < b[j].y1 {
+        if rects[a[i]].y1 < rects[b[j]].y1 {
             let mut k = j;
-            while k < b.len() && b[k].y1 <= a[i].y2 {
-                cb(a[i].id, b[k].id);
+            while k < b.len() && rects[b[k]].y1 <= rects[a[i]].y2 {
+                cb(a[i], b[k]);
                 k += 1;
             }
             i += 1;
         } else {
             let mut k = i;
-            while k < a.len() && a[k].y1 <= b[j].y2 {
-                cb(b[j].id, a[k].id);
+            while k < a.len() && rects[a[k]].y1 <= rects[b[j]].y2 {
+                cb(b[j], a[k]);
                 k += 1
             }
             j += 1;
