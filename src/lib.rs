@@ -79,7 +79,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
             second_mid_touch.push(rect);
         }
 
-        if rect.x1 > mid {
+        if rect.x1 >= mid {
             s22.push(rect);
         } else {
             if rect.x1 <= first {
