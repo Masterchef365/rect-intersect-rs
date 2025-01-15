@@ -51,10 +51,10 @@ fn detect(rects: &[Rect], v: &[(i32, usize)], cb: &mut impl FnMut(usize, usize))
     let mid = second_half.first().unwrap();
     let end = second_half.last().unwrap();
 
-    let mut first_y_sort: Vec<usize> = (first.1..mid.1).collect();
+    let mut first_y_sort: Vec<usize> = first_half.iter().map(|(_, idx)| *idx).collect();
     first_y_sort.sort_by_key(|i| rects[*i].y1);
 
-    let mut second_y_sort: Vec<usize> = (mid.1..=end.1).collect();
+    let mut second_y_sort: Vec<usize> = second_half.iter().map(|(_, idx)| *idx).collect();
     second_y_sort.sort_by_key(|i| rects[*i].y1);
 
     for i in first_y_sort {
