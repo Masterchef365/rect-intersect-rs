@@ -23,10 +23,6 @@ fn main() {
 
         println!("{},{},{}", n, brute_time, algo_time);
 
-        assert_eq!(
-            to_comparable(algo),
-            to_comparable(brute),
-        );
-
+        assert_eq!(to_comparable(algo), to_comparable(brute),);
     }
 }

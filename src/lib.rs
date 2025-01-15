@@ -122,7 +122,6 @@ impl Rect {
     }
 }
 
-
 pub fn brute_force_intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
     let mut output = vec![];
     for i in 0..rects.len() {
@@ -158,7 +157,6 @@ pub fn to_comparable(indices: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn trivial1() {
@@ -259,8 +257,6 @@ mod tests {
             to_comparable(brute_force_intersect(&rects)),
         );
     }
-
-
 }
 
 pub fn random_rects(n: usize, seed: u64) -> Vec<Rect> {
@@ -285,4 +281,3 @@ pub fn random_rects_detailed(n: usize, seed: u64, pos_range: i32, max_size: i32)
         })
         .collect()
 }
-
