@@ -263,10 +263,14 @@ mod tests {
 }
 
 pub fn random_rects(n: usize, seed: u64) -> Vec<Rect> {
+    random_rects_detailed(n, seed, 100, 50)
+}
+
+pub fn random_rects_detailed(n: usize, seed: u64, pos_range: i32, max_size: i32) -> Vec<Rect> {
     let mut rng = SmallRng::seed_from_u64(seed);
 
-    let range = 100;
-    let sz = 50;
+    let range = pos_range;
+    let sz = max_size;
 
     (0..n)
         .map(|id| {
@@ -280,3 +284,4 @@ pub fn random_rects(n: usize, seed: u64) -> Vec<Rect> {
         })
         .collect()
 }
+
