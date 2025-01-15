@@ -11,7 +11,7 @@ pub struct Rect {
 
 pub fn intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
     let mut output = vec![];
-    intersect_callback(rects, &mut |a, b| output.push(dbg!(a, b)));
+    intersect_callback(rects, &mut |a, b| output.push((a, b)));
     output
 }
 
@@ -33,7 +33,6 @@ fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
 }
 
 fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
-    eprintln!();
     if v.len() < 2 {
         return;
     }
@@ -56,9 +55,6 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
 
     let mut second_y_sort: Vec<Rect> = second_half.iter().map(|(_, r)| *r).collect();
     second_y_sort.sort_by_key(|r| r.y1);
-
-    dbg!((first, mid, end, first_y_sort.len(), second_y_sort.len()));
-
 
     for rect in first_y_sort {
         if rect.x2 == mid {
@@ -88,33 +84,17 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
         }
     }
 
-    eprintln!("S12 S22");
     stab(&s12, &s22, cb);
-    eprintln!("S21 S11");
     stab(&s21, &s11, cb);
-    eprintln!("S12 S21");
     stab(&s12, &s21, cb);
-    eprintln!("S mids");
     stab(&first_mid_touch, &second_mid_touch, cb);
-
-    //eprintln!("S11 S22");
-    //stab(&s11, &s22, cb);
 
     detect(&first_half, cb);
     detect(&second_half, cb);
 }
 
 fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
-    println!("{:?} {:?}", a.first(), b.last());
     let (mut i, mut j) = (0, 0);
-
-    /*
-    for x in a {
-        for y in b {
-            cb(x.id, y.id);
-        }
-    }
-    */
 
     while i < a.len() && j < b.len() {
         if a[i].y1 < b[j].y1 {
@@ -268,6 +248,18 @@ mod tests {
             to_comparable(brute_force_intersect(&rects)),
         );
     }
+
+    #[test]
+    #[cfg(not(debug_assertions))]
+    fn random3() {
+        let rects = random_rects(10_000, 3290);
+        assert_eq!(
+            to_comparable(intersect(&rects)),
+            to_comparable(brute_force_intersect(&rects)),
+        );
+    }
+
+
 }
 
 pub fn random_rects(n: usize, seed: u64) -> Vec<Rect> {
