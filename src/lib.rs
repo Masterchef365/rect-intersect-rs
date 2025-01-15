@@ -68,7 +68,7 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     }
 
     for rect in second_y_sort {
-        if rect.x1 > mid {
+        if rect.x1 >= mid {
             s22.push(rect);
         } else {
             if rect.x1 < first {
@@ -95,17 +95,23 @@ fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
     println!("{:?} {:?}", a.first(), b.last());
     let (mut i, mut j) = (0, 0);
 
+    for x in a {
+        for y in b {
+            cb(x.id, y.id);
+        }
+    }
+
     while i < a.len() && j < b.len() {
-        if a[i].y1 <= b[j].y1 {
+        if a[i].y1 < b[j].y1 {
             let mut k = j;
-            while k < b.len() && b[k].y1 <= a[i].y2 {
+            while k < b.len() && b[k].y1 < a[i].y2 {
                 cb(a[i].id, b[k].id);
                 k += 1;
             }
             i += 1;
         } else {
             let mut k = i;
-            while k < a.len() && a[k].y1 <= b[j].y2 {
+            while k < a.len() && a[k].y1 < b[j].y2 {
                 cb(b[j].id, a[k].id);
                 k += 1
             }
