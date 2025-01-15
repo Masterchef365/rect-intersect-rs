@@ -11,7 +11,7 @@ pub struct Rect {
 
 pub fn intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
     let mut output = vec![];
-    intersect_callback(rects, &mut |a, b| output.push((a, b)));
+    intersect_callback(rects, &mut |a, b| output.push(dbg!(a, b)));
     output
 }
 
@@ -54,12 +54,16 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
     let mid = second_half.first().unwrap().0;
     let end = second_half.last().unwrap().0;
 
+    dbg!((first, mid, end, first_h.len(), second_h.len()));
+
     for rect in first_h {
         if rect.x2 < mid {
             s11.push(rect);
         } else {
             if rect.x2 > end {
                 s12.push(rect);
+            } else {
+                s11.push(rect);
             }
         }
     }
@@ -70,19 +74,28 @@ fn detect(v: &[(i32, Rect)], cb: &mut impl FnMut(usize, usize)) {
         } else {
             if rect.x1 < first {
                 s21.push(rect);
+            } else {
+                s22.push(rect);
             }
         }
     }
 
+    eprintln!("S12 S22");
     stab(&s12, &s22, cb);
+    eprintln!("S21 S11");
     stab(&s21, &s11, cb);
+    eprintln!("S12 S21");
     stab(&s12, &s21, cb);
+
+    //eprintln!("S21 S22");
+    //stab(&s21, &s22, cb);
 
     detect(&first_half, cb);
     detect(&second_half, cb);
 }
 
 fn stab(a: &[Rect], b: &[Rect], cb: &mut impl FnMut(usize, usize)) {
+    println!("{:?} {:?}", a.first(), b.last());
     let (mut i, mut j) = (0, 0);
 
     while i < a.len() && j < b.len() {
