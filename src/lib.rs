@@ -6,7 +6,6 @@ pub struct Rect {
     pub y1: i32,
     pub x2: i32,
     pub y2: i32,
-    pub id: usize,
 }
 
 pub fn intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
@@ -127,7 +126,7 @@ pub fn brute_force_intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
     for i in 0..rects.len() {
         for j in i + 1..rects.len() {
             if rects[i].intersects(&rects[j]) {
-                output.push((rects[i].id, rects[j].id));
+                output.push((i, j));
             }
         }
     }
@@ -161,7 +160,6 @@ mod tests {
     #[test]
     fn trivial1() {
         let r1 = Rect {
-            id: 0,
             x1: 5,
             x2: 10,
             y1: 2,
@@ -169,7 +167,6 @@ mod tests {
         };
 
         let r2 = Rect {
-            id: 1,
             x1: 5,
             x2: 10,
             y1: 2,
@@ -186,7 +183,6 @@ mod tests {
     #[test]
     fn trivial2() {
         let r1 = Rect {
-            id: 0,
             x1: 5,
             x2: 10,
             y1: 2,
@@ -194,7 +190,6 @@ mod tests {
         };
 
         let r2 = Rect {
-            id: 1,
             x1: 50,
             x2: 60,
             y1: 2,
@@ -208,7 +203,6 @@ mod tests {
     #[test]
     fn trivial3() {
         let r1 = Rect {
-            id: 0,
             x1: 5,
             x2: 10,
             y1: 2,
@@ -216,7 +210,6 @@ mod tests {
         };
 
         let r2 = Rect {
-            id: 1,
             x1: 9,
             x2: 25,
             y1: 2,
@@ -270,14 +263,14 @@ pub fn random_rects_detailed(n: usize, seed: u64, pos_range: i32, max_size: i32)
     let sz = max_size;
 
     (0..n)
-        .map(|id| {
+        .map(|_| {
             let x1 = rng.gen_range(-range..=range);
             let x2 = x1 + rng.gen_range(1..=sz);
 
             let y1 = rng.gen_range(-range..=range);
             let y2 = y1 + rng.gen_range(1..=sz);
 
-            Rect { x1, x2, y1, y2, id }
+            Rect { x1, x2, y1, y2 }
         })
         .collect()
 }
