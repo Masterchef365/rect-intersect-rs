@@ -32,6 +32,9 @@ fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
     detect(rects, &v, cb)
 }
 
+type SVec = smallvec::SmallVec<[usize; 4]>;
+use smallvec::smallvec;
+
 fn detect(rects: &[Rect], v: &[(i32, usize)], cb: &mut impl FnMut(usize, usize)) {
     if v.len() < 2 {
         return;
@@ -39,12 +42,12 @@ fn detect(rects: &[Rect], v: &[(i32, usize)], cb: &mut impl FnMut(usize, usize))
 
     let (first_half, second_half) = v.split_at(v.len() / 2);
 
-    let mut s11 = vec![];
-    let mut s12 = vec![];
-    let mut s21 = vec![];
-    let mut s22 = vec![];
-    let mut first_mid_touch = vec![];
-    let mut second_mid_touch = vec![];
+    let mut s11: SVec = smallvec![];
+    let mut s12: SVec = smallvec![];
+    let mut s21: SVec = smallvec![];
+    let mut s22: SVec = smallvec![];
+    let mut first_mid_touch: SVec = smallvec![];
+    let mut second_mid_touch: SVec = smallvec![];
 
     let first = first_half.first().unwrap();
     let mid = second_half.first().unwrap();

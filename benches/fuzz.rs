@@ -12,11 +12,13 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         });
 
         if i * i < 10_000 {
+            /*
             c.bench_function(&format!("brute/random {}", i * i), |b| {
                 b.iter(|| {
                     black_box(brute_force_intersect(black_box(&rects)));
                 })
             });
+            */
         }
     }
 }

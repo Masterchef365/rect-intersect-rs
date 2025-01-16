@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+smallvec = "1.13.2"
 rand = { version = "0.8", features = ["small_rng"] }
 
 [dev-dependencies]
