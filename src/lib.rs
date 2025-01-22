@@ -14,7 +14,7 @@ pub fn intersect(rects: &[Rect]) -> Vec<(usize, usize)> {
     output
 }
 
-fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
+pub fn intersect_callback(rects: &[Rect], cb: &mut impl FnMut(usize, usize)) {
     #[cfg(debug_assertions)]
     for r in rects {
         debug_assert!(r.x1 <= r.x2);
