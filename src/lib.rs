@@ -102,8 +102,9 @@ fn stab(rects: &[Rect], a: &[usize], b: &[usize], cb: &mut impl FnMut(usize, usi
     while i < a.len() && j < b.len() {
         if rects[a[i]].y1 < rects[b[j]].y1 {
             let mut k = j;
-            while k < b.len() && rects[b[k]].y1 <= rects[a[i]].y2 {
-                if a[i] != b[k] {
+            while k < b.len() && rects[b[k]].y1 < rects[a[i]].y2 {
+                // TODO: THIS IF STATEMENT IS A HACK
+                if a[i] != b[k] && rects[a[i]].intersects(&rects[b[k]]) {
                     cb(a[i], b[k]);
                 }
                 k += 1;
@@ -111,8 +112,9 @@ fn stab(rects: &[Rect], a: &[usize], b: &[usize], cb: &mut impl FnMut(usize, usi
             i += 1;
         } else {
             let mut k = i;
-            while k < a.len() && rects[a[k]].y1 <= rects[b[j]].y2 {
-                if b[j] != a[k] {
+            while k < a.len() && rects[a[k]].y1 < rects[b[j]].y2 {
+                // TODO: THIS IF STATEMENT IS A HACK
+                if b[j] != a[k] && rects[b[j]].intersects(&rects[a[k]]) {
                     cb(b[j], a[k]);
                 }
                 k += 1
@@ -124,7 +126,7 @@ fn stab(rects: &[Rect], a: &[usize], b: &[usize], cb: &mut impl FnMut(usize, usi
 
 impl Rect {
     fn intersects(&self, other: &Self) -> bool {
-        self.x1 <= other.x2 && other.x1 <= self.x2 && self.y1 <= other.y2 && other.y1 <= self.y2
+        self.x1 < other.x2 && other.x1 < self.x2 && self.y1 < other.y2 && other.y1 < self.y2
     }
 }
 
@@ -242,6 +244,9 @@ mod tests {
     #[test]
     fn random2() {
         let rects = random_rects(100, 422);
+            dbg!(intersect(&rects).len());
+            dbg!(brute_force_intersect(&rects).len());
+
         assert_eq!(
             to_comparable(intersect(&rects)),
             to_comparable(brute_force_intersect(&rects)),
