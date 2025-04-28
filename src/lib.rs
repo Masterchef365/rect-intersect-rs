@@ -103,14 +103,18 @@ fn stab(rects: &[Rect], a: &[usize], b: &[usize], cb: &mut impl FnMut(usize, usi
         if rects[a[i]].y1 < rects[b[j]].y1 {
             let mut k = j;
             while k < b.len() && rects[b[k]].y1 <= rects[a[i]].y2 {
-                cb(a[i], b[k]);
+                if a[i] != b[k] {
+                    cb(a[i], b[k]);
+                }
                 k += 1;
             }
             i += 1;
         } else {
             let mut k = i;
             while k < a.len() && rects[a[k]].y1 <= rects[b[j]].y2 {
-                cb(b[j], a[k]);
+                if b[j] != a[k] {
+                    cb(b[j], a[k]);
+                }
                 k += 1
             }
             j += 1;
